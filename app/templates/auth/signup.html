@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Signup{% endblock %}
+
+{% block body %}
+    <form action="{{ url_for('auth.signup') }}" method="post">
+        <h1 class="text-center">Signup</h1>
+        {% for category, message in get_flashed_messages(True) %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {{ form.csrf_token }}
+        <div class="mb-3">
+            {{ form.username(class = 'form-control', placeholder = 'Username') }}
+            {% if form.username.errors %}
+                {% for error in form.username.errors %}
+                    <div class="alert alert-danger mt-1">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.password(class = 'form-control', placeholder = 'Password') }}
+            {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                    <div class="alert alert-danger mt-1">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.confirm_password(class = 'form-control', placeholder = 'Confirm Password') }}
+            {% if form.confirm_password.errors %}
+                {% for error in form.confirm_password.errors %}
+                    <div class="alert alert-danger mt-1">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {{ form.submit(class = 'btn btn-primary') }}
+        <a href="{{ url_for('auth.login') }}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ms-2">Login instead</a>
+    </form>
+{% endblock %}

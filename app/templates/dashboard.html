@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ current_user.username }}{% endblock %}
+
+{% block body %}
+    <div class="alert alert-success text-center rounded-0">
+        You have logged in as {{ current_user.username }}!
+    </div>
+{% endblock %}
