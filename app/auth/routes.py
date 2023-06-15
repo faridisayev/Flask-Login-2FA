@@ -2,9 +2,10 @@ from flask import render_template, flash, redirect, request, url_for
 from app.auth import bp 
 from app.extensions import db, limiter
 from app.models.account import Account
-from app.auth.forms import SignupForm, LoginForm
+from app.auth.forms import SignupForm, LoginForm, VerifyForm
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_login import login_user
+from flask_mail import Message
 
 @bp.route('/login', methods = ['GET', 'POST'])
 @limiter.limit('10/minute')
@@ -25,7 +26,7 @@ def login():
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
-        db.session.add(Account(username = form.username.data, password = generate_password_hash(form.password.data)))
+        db.session.add(Account(username = form.username.data, email = form.email.data, password = generate_password_hash(form.password.data)))
         db.session.commit()
         flash('You have successfully signed up.', 'success')
         return redirect(url_for('auth.signup'))
