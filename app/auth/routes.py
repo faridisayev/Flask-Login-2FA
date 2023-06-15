@@ -1,12 +1,13 @@
 from flask import render_template, flash, redirect, request, url_for
 from app.auth import bp 
-from app.extensions import db
+from app.extensions import db, limiter
 from app.models.account import Account
 from app.auth.forms import SignupForm, LoginForm
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_login import login_user
 
 @bp.route('/login', methods = ['GET', 'POST'])
+@limiter.limit('10/minute')
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -20,6 +21,7 @@ def login():
     return render_template('auth/login.html', form = form)
 
 @bp.route('/signup', methods = ['GET', 'POST'])
+@limiter.limit('10/minute')
 def signup():
     form = SignupForm()
     if form.validate_on_submit():

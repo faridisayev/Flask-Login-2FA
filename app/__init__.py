@@ -1,29 +1,15 @@
-from flask import Flask
+from flask import Flask, render_template
 from config import Config
-from app.extensions import db
-from flask_login import LoginManager
-from flask_bcrypt import Bcrypt
+from app.extensions import db, login_manager, limiter
 
 def create_app(create_config=Config):
     app = Flask(__name__)
     app.config.from_object(create_config)
 
     db.init_app(app)
-
-    # login manager 
-
-    login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
-    login_manager.login_message = 'Please login to continue'
-    login_manager.login_message_category = 'success'
+    limiter.init_app(app)
 
-    from app.models.account import Account
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return Account.query.get(int(user_id))
-    
     # blueprints
 
     from app.main import bp as main_blueprint
@@ -31,5 +17,24 @@ def create_app(create_config=Config):
 
     from app.auth import bp as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
+    # error handlers
+
+    @app.errorhandler(429)
+    def TooManyRequests(error):
+        return render_template('errors/429.html'), 429
+
+    @app.errorhandler(500)
+    def InternalServerError(error):
+        return render_template('errors/500.html'), 500
+    
+    @app.errorhandler(404)
+    def NotFound(error):
+        return render_template('errors/404.html'), 404
+    
+    @app.errorhandler(Exception)
+    def Unknown(error):
+        app.logger.error(str(error))
+        return render_template('errors/unknown.html'), 500
     
     return app
