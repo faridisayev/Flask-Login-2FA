@@ -3,6 +3,6 @@ export FLASK_ENV=development
 export FLASK_DEBUG=true
 export PYTHONDONTWRITEBYTECODE=abc
 export MAIL_USERNAME=faridisayev@outlook.com
-export MAIL_PASSWORD=fltzdhvuzaksmhsk
+export MAIL_PASSWORD=gpaisjibqaaipqhd
 export SECRET_KEY=asd8a9d8213kkfad792937bacnad976b238
 flask run

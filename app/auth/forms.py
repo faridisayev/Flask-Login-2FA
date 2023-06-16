@@ -25,6 +25,15 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField()
     submit = SubmitField('Login')
 
-class VerifyForm(FlaskForm):
+class ResetPasswordForm(FlaskForm):
     email = EmailField(validators=[InputRequired(), Length(max=80)])
-    submit = SubmitField('Submit')
+    submit = SubmitField('Reset password')
+
+    def validate_email(self, email):
+        existing_email = Account.query.filter_by(email = email.data).first()
+        if not existing_email: raise ValidationError('User with this email does not exist.')
+
+class NewPasswordForm(FlaskForm):
+    new_password = PasswordField(validators=[InputRequired(), Regexp(re.compile(r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,80}$"))])
+    confirm_new_password = PasswordField(validators=[InputRequired(), EqualTo('new_password')])
+    submit = SubmitField('Reset password')

@@ -52,6 +52,9 @@
             {% endif %}
         </div>
         {{ form.submit(class = 'btn btn-primary') }}
-        <a href="{{ url_for('auth.login') }}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ms-2">Login instead</a>
+        <a href="{{ url_for('auth.login') }}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ms-2">Login</a>
+        <br>
+        <br>
+        <a href="{{ url_for('auth.reset_password') }}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Forgot password?</a>
     </form>
 {% endblock %}
