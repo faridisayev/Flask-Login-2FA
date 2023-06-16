@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from config import Config
-from app.extensions import db, login_manager, limiter, mail
+from app.extensions import db, login_manager, limiter
 
 def create_app(create_config=Config):
     app = Flask(__name__)
@@ -9,7 +9,6 @@ def create_app(create_config=Config):
     db.init_app(app)
     login_manager.init_app(app)
     limiter.init_app(app)
-    mail.init_app(app)
 
     # blueprints
 
