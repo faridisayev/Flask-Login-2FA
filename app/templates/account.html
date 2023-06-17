@@ -8,7 +8,13 @@
         <p><b>User ID:</b> {{ current_user.id }}</p>
         <p><b>Username:</b> {{ current_user.username }}</p>
         <p><b>Email:</b> {{ current_user.email }}</p>
-        <p><a class="btn btn-primary" href="{{ url_for('main.update_account') }}">Update</a><a class="btn btn-primary ms-2" href="{{ url_for('auth.reset_password') }}">Change password</a></p>
+        {% if current_user.enabled_2fa %}
+            <p><a class="btn btn-danger" href="{{ url_for('main.disable_2fa') }}">Disable 2FA</a></p>
+        {% endif %}
+        {% if not current_user.enabled_2fa %}
+            <p><a class="btn btn-success" href="{{ url_for('main.setup_2fa') }}">Setup 2FA</a></p>
+        {% endif %}
+        <p><a class="btn btn-primary" href="{{ url_for('main.update_account') }}">Update Account</a><a class="btn btn-primary ms-2" href="{{ url_for('auth.reset_password') }}">Change password</a></p>
         <p><a class="btn btn-danger" href="{{ url_for('main.delete_account', id = current_user.id) }}">Delete account</a></p>
     </div>
 {% endblock %}

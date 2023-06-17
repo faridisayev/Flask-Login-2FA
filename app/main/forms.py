@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, SubmitField
+from wtforms import StringField, EmailField, SubmitField, IntegerField
 from wtforms.validators import InputRequired, Length, ValidationError
 from app.models.account import Account
 
@@ -15,3 +15,7 @@ class UpdateAccountForm(FlaskForm):
     def validate_email(self, email):
         existing_email = Account.query.filter_by(email = email.data).first()
         if existing_email: raise ValidationError('An account with this email already exists.')
+
+class SetupTwoFactorAuthenticationForm(FlaskForm):
+    totp = IntegerField(validators=[InputRequired()])
+    submit = SubmitField('Enable 2FA')

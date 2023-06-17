@@ -8,7 +8,8 @@ class Account(db.Model, UserMixin):
     email = db.Column(db.String(80), nullable = False, unique = True)
     password = db.Column(db.String(80), nullable = False)
     created_at = db.Column(db.DateTime(timezone = True), server_default = func.now())
-    is_verified = db.Column(db.Boolean, nullable = False, default = False)
+    enabled_2fa = db.Column(db.Boolean, nullable = False, default = False)
+    secret_key = db.Column(db.String(80))
 
     def __repr__(self):
         return f'<Account ID: {self.id}>'

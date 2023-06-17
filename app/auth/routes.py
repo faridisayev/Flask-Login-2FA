@@ -4,7 +4,7 @@ from app.extensions import db, limiter, mail
 from app.models.account import Account
 from app.auth.forms import SignupForm, LoginForm, NewPasswordForm, ResetPasswordForm
 from flask_bcrypt import generate_password_hash, check_password_hash
-from flask_login import login_user
+from flask_login import login_user, logout_user
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 import os
@@ -32,6 +32,7 @@ def signup():
     if form.validate_on_submit():
         db.session.add(Account(username = form.username.data, email = form.email.data, password = generate_password_hash(form.password.data)))
         db.session.commit()
+        logout_user()
         flash('You have successfully signed up.', 'success')
         return redirect(url_for('auth.signup'))
     return render_template('auth/signup.html', form = form)

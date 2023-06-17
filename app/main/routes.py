@@ -1,9 +1,11 @@
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, request
 from app.main import bp 
 from flask_login import login_required, logout_user, current_user, fresh_login_required
 from app.extensions import db
 from app.models.account import Account
-from app.main.forms import UpdateAccountForm
+from app.main.forms import UpdateAccountForm, SetupTwoFactorAuthenticationForm
+from urllib import parse
+import pyotp
 
 @bp.route('/')
 def home():
@@ -44,3 +46,36 @@ def update_account():
         db.session.commit()
         flash('Your account has been updated.', 'success')
     return render_template('update_account.html', form = form)
+
+@bp.route('/setup_2fa', methods = ['GET', 'POST'])
+@fresh_login_required
+def setup_2fa():
+
+    if current_user.enabled_2fa:
+        return redirect(url_for('main.account'))
+
+    form = SetupTwoFactorAuthenticationForm()
+
+    if form.validate_on_submit():
+
+        if not pyotp.TOTP(current_user.secret_key).verify(form.totp.data):
+            flash('The code you provided is wrong. Please scan new qrcode and try again.', 'danger')
+            return redirect(url_for('main.setup_2fa'))
+        
+        current_user.enabled_2fa = True
+        db.session.commit()
+        return redirect(url_for('main.account'))
+
+    current_user.secret_key = pyotp.random_base32()
+    db.session.commit()
+    uri = pyotp.totp.TOTP(current_user.secret_key).provisioning_uri(name = current_user.username, issuer_name = 'Flask App')
+    qrcode_url = "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=" + parse.quote(uri, safe='')
+
+    return render_template('setup_2fa.html', form = form, qrcode_url = qrcode_url)
+
+@bp.route('/disable_2fa')
+@fresh_login_required
+def disable_2fa():
+    current_user.enabled_2fa = False
+    db.session.commit()
+    return redirect(url_for('main.account'))
