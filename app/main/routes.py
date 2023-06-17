@@ -39,8 +39,8 @@ def delete_account(id):
 def update_account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.email = form.email.data
+        if form.username.data: current_user.username = form.username.data
+        if form.email.data: current_user.email = form.email.data
         db.session.commit()
         flash('Your account has been updated.', 'success')
     return render_template('update_account.html', form = form)
