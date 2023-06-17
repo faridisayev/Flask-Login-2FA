@@ -1,14 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}Two-Factor Authentication Setup{% endblock %}
+{% block title %}F2A{% endblock %}
 
 {% block body %}
-    <form action="{{ url_for('main.setup_2fa')}}" method="post" class="text-center">
-        <h1>Two-Factor Authentication Setup</h1>
-        <p>Scan the QR code below with your authenticator app:</p>
-        <img src="{{ qrcode_url }}" alt="QR code">
-        <br>
-        <br>
+    <form action="" method="post" class="text-center">
+        <h1 class="text-center">F2A</h1>
         {% for category, message in get_flashed_messages(True) %}
             <div class="alert alert-{{ category }}">
                 {{ message }}
@@ -16,15 +12,15 @@
         {% endfor %}
         {{ form.csrf_token }}
         <div class="mb-3">
-            {{ form.totp(class = 'form-control', placeholder = 'TOTP Code') }}
+            {{ form.totp(class = 'form-control', placeholder = '6 digit code') }}
             {% if form.totp.errors %}
                 {% for error in form.totp.errors %}
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger mt-1">
                         {{ error }}
                     </div>
                 {% endfor %}
             {% endif %}
         </div>
-        {{ form.submit(class='btn btn-primary') }}
+        {{ form.submit(class = 'btn btn-primary') }}
     </form>
 {% endblock %}

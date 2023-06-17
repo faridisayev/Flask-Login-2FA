@@ -2,12 +2,12 @@ from flask import render_template, flash, redirect, request, url_for, session
 from app.auth import bp 
 from app.extensions import db, limiter, mail
 from app.models.account import Account
-from app.auth.forms import SignupForm, LoginForm, NewPasswordForm, ResetPasswordForm
+from app.auth.forms import SignupForm, LoginForm, NewPasswordForm, ResetPasswordForm, TOTPLoginForm
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
-import os
+import os, pyotp
 
 serializer = URLSafeTimedSerializer(os.environ.get('SECRET_KEY'))
 
@@ -18,12 +18,36 @@ def login():
     if form.validate_on_submit():
         user = Account.query.filter_by(username = form.username.data).first()
         if user and check_password_hash(user.password, form.password.data):
+            if user.enabled_2fa:
+                token = serializer.dumps((user.username, form.remember_me.data, request.args.get('next')), salt = 'second_factor_auth')
+                return redirect(url_for('auth.second_factor_auth', token = token))
             login_user(user, remember=form.remember_me.data)
             flash('You have successfully logged in.', 'success')
             return redirect(request.args.get('next') or url_for('main.dashboard'))
         else:
             flash('Username or password is wrong.', 'danger')
     return render_template('auth/login.html', form = form)
+
+@bp.route('/second_factor_auth/<token>', methods = ['GET', 'POST'])
+@limiter.limit('10/minute')
+def second_factor_auth(token):
+    try:
+        username, remember_me, next = serializer.loads(token, salt = 'second_factor_auth', max_age = 180)
+    except SignatureExpired:
+        flash('Token signature has expired, please login again.', 'danger')
+    except BadSignature:
+        flash('Bad signature, please login again..', 'danger')
+
+    form = TOTPLoginForm()
+    if form.validate_on_submit():
+        user = Account.query.filter_by(username = username).first()
+        if pyotp.totp.TOTP(user.secret_key).verify(form.totp.data):
+            login_user(user, remember = remember_me)
+            return redirect(next or url_for('main.dashboard'))
+        else:
+            flash('Incorrect TOTP code, could not verify user.', 'danger')
+
+    return render_template('auth/second_factor_auth.html', form = form)
 
 @bp.route('/signup', methods = ['GET', 'POST'])
 @limiter.limit('10/minute')

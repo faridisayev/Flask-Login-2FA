@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, EmailField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, EmailField, IntegerField
 from wtforms.validators import InputRequired, Length, EqualTo, Regexp, ValidationError
 from app.models.account import Account
 import re
@@ -37,3 +37,7 @@ class NewPasswordForm(FlaskForm):
     new_password = PasswordField(validators=[InputRequired(), Regexp(re.compile(r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,80}$"))])
     confirm_new_password = PasswordField(validators=[InputRequired(), EqualTo('new_password')])
     submit = SubmitField('Reset password')
+
+class TOTPLoginForm(FlaskForm):
+    totp = IntegerField(validators=[InputRequired()])
+    submit = SubmitField('TOTP Login')
