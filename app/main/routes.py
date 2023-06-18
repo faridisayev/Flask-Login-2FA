@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, abort
 from app.main import bp 
 from flask_login import login_required, logout_user, current_user, fresh_login_required
 from app.extensions import db
@@ -6,7 +6,7 @@ from app.models.account import Account
 from app.main.forms import UpdateAccountForm
 from app.auth.forms import TOTPLoginForm as SetupTwoFactorAuthenticationForm
 from urllib import parse
-import pyotp
+import pyotp, requests, os
 
 @bp.route('/')
 def home():
@@ -42,11 +42,16 @@ def delete_account(id):
 def update_account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
+
+        verify_response = requests.post(url = f"https://www.google.com/recaptcha/api/siteverify?secret={os.environ.get('RECAPTCHA_SECRET_KEY')}&response={request.form['g-recaptcha-response']}").json()
+        if not verify_response['success'] or verify_response['score'] < 0.5:
+            abort(401)
+
         if form.username.data: current_user.username = form.username.data
         if form.email.data: current_user.email = form.email.data
         db.session.commit()
         flash('Your account has been updated.', 'success')
-    return render_template('update_account.html', form = form)
+    return render_template('update_account.html', form = form, recaptcha_site_key = os.environ.get('RECAPTCHA_SITE_KEY'))
 
 @bp.route('/setup_2fa', methods = ['GET', 'POST'])
 @fresh_login_required
