@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block body %}
-    <form id="login-form" action="" method="post">
+    <form id="login-form" method="post">
         <h1 class="text-center">Login</h1>
         {% for category, message in get_flashed_messages(True) %}
             <div class="alert alert-{{ category }}">

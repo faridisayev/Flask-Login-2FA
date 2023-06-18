@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block body %}
-    <form id="second-factor-auth-form" action="" method="post" class="text-center">
+    <form id="second-factor-auth-form" method="post" class="text-center">
         <h1 class="text-center">F2A</h1>
         {% for category, message in get_flashed_messages(True) %}
             <div class="alert alert-{{ category }}">
