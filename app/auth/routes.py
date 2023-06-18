@@ -48,6 +48,11 @@ def second_factor_auth(token):
 
     form = TOTPLoginForm()
     if form.validate_on_submit():
+
+        verify_response = requests.post(url = f"https://www.google.com/recaptcha/api/siteverify?secret={os.environ.get('RECAPTCHA_SECRET_KEY')}&response={request.form['g-recaptcha-response']}").json()
+        if not verify_response['success'] or verify_response['score'] < 0.5:
+            abort(401)
+
         user = Account.query.filter_by(username = username).first()
         digits = [str(form.totp_digit_1.data), str(form.totp_digit_2.data), str(form.totp_digit_3.data), str(form.totp_digit_4.data), str(form.totp_digit_5.data), str(form.totp_digit_6.data)]
         totp = int(''.join(digits))
@@ -57,7 +62,7 @@ def second_factor_auth(token):
         else:
             flash('Incorrect TOTP code, could not verify user.', 'danger')
 
-    return render_template('auth/second_factor_auth.html', form = form)
+    return render_template('auth/second_factor_auth.html', form = form, recaptcha_site_key = os.environ.get('RECAPTCHA_SITE_KEY'))
 
 @bp.route('/signup', methods = ['GET', 'POST'])
 @limiter.limit('10/minute')
