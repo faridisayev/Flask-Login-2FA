@@ -3,15 +3,7 @@
 {% block head %}
     <title>Two-Factor Authentication Setup</title>
     <link rel="stylesheet" href="{{ url_for('static', filename = 'auth/css/second_factor_auth.css')}}">
-    <style>
-        form {
-            max-width: 400px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'auth/css/2fa_form.css')}}">
 {% endblock %}
 
 {% block body %}
