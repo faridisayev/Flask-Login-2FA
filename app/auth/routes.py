@@ -16,6 +16,11 @@ serializer = URLSafeTimedSerializer(os.environ.get('SECRET_KEY'))
 def login():
     form = LoginForm()
     if form.validate_on_submit():
+
+        verify_response = requests.post(url = f"https://www.google.com/recaptcha/api/siteverify?secret={os.environ.get('RECAPTCHA_SECRET_KEY')}&response={request.form['g-recaptcha-response']}").json()
+        if not verify_response['success'] or verify_response['score'] < 0.5:
+            abort(401)
+
         if re.match(r'^[a-zA-Z0-9_-]{3,20}$', form.email_or_username.data):
             user = Account.query.filter_by(username = form.email_or_username.data).first()
         else:
@@ -29,7 +34,7 @@ def login():
             return redirect(request.args.get('next') or url_for('main.dashboard'))
         else:
             flash('Username or password is wrong.', 'danger')
-    return render_template('auth/login.html', form = form)
+    return render_template('auth/login.html', form = form, recaptcha_site_key = os.environ.get('RECAPTCHA_SITE_KEY'))
 
 @bp.route('/second_factor_auth/<token>', methods = ['GET', 'POST'])
 @limiter.limit('10/minute')
@@ -61,7 +66,7 @@ def signup():
     if form.validate_on_submit():
         
         verify_response = requests.post(url = f"https://www.google.com/recaptcha/api/siteverify?secret={os.environ.get('RECAPTCHA_SECRET_KEY')}&response={request.form['g-recaptcha-response']}").json()
-        if verify_response['success'] or verify_response['score'] < 0.5:
+        if not verify_response['success'] or verify_response['score'] < 0.5:
             abort(401)
 
         db.session.add(Account(username = form.username.data, email = form.email.data, password = generate_password_hash(form.password.data)))
