@@ -5,7 +5,7 @@ from app.models.account import Account
 import re
 
 class SignupForm(FlaskForm):
-    username = StringField(validators=[InputRequired(), Length(max=20)])
+    username = StringField(validators=[InputRequired(), Regexp(re.compile(r'^[a-zA-Z0-9_-]{3,20}$'))])
     email = EmailField(validators=[InputRequired(), Length(max=80)])
     password = PasswordField(validators=[InputRequired(), Regexp(re.compile(r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,80}$"))])
     confirm_password = PasswordField(validators=[InputRequired(), EqualTo('password')])
@@ -20,7 +20,7 @@ class SignupForm(FlaskForm):
         if existing_email: raise ValidationError('An account with this email already exists.')
 
 class LoginForm(FlaskForm):
-    username = StringField(validators=[InputRequired()])
+    email_or_username = StringField(validators=[InputRequired()])
     password = PasswordField(validators=[InputRequired()])
     remember_me = BooleanField()
     submit = SubmitField('Login')

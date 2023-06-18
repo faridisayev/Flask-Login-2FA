@@ -7,7 +7,7 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
-import os, pyotp
+import os, pyotp, re
 
 serializer = URLSafeTimedSerializer(os.environ.get('SECRET_KEY'))
 
@@ -16,7 +16,10 @@ serializer = URLSafeTimedSerializer(os.environ.get('SECRET_KEY'))
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = Account.query.filter_by(username = form.username.data).first()
+        if re.match(r'^[a-zA-Z0-9_-]{3,20}$', form.email_or_username.data):
+            user = Account.query.filter_by(username = form.email_or_username.data).first()
+        else:
+            user = Account.query.filter_by(email = form.email_or_username.data).first()
         if user and check_password_hash(user.password, form.password.data):
             if user.enabled_2fa:
                 token = serializer.dumps((user.username, form.remember_me.data, request.args.get('next')), salt = 'second_factor_auth')
