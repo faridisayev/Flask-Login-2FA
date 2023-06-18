@@ -12,6 +12,10 @@ form {
     box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
     max-width: 400px;
     background: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 form .form-control {
     display: block;
