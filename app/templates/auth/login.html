@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Login{% endblock %}
+{% block head %}
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'auth/css/default_form.css')}}">
+{% endblock %}
 
 {% block body %}
     <form action="" method="post">
@@ -12,7 +15,7 @@
         {% endfor %}
         {{ form.csrf_token }}
         <div class="mb-3">
-            {{ form.email_or_username(class = 'form-control', placeholder = 'Email or Username') }}
+            {{ form.email_or_username(class = 'form-control', placeholder = 'Email or Username', autofocus = True) }}
             {% if form.email_or_username.errors %}
                 {% for error in form.email_or_username.errors %}
                     <div class="alert alert-danger mt-1">
@@ -35,9 +38,9 @@
             Remember me: {{ form.remember_me(class = 'form-check-input') }}
         </div>
         {{ form.submit(class = 'btn btn-primary') }}
-        <a href="{{ url_for('auth.signup') }}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ms-2">Signup</a>
         <br>
         <br>
-        <a href="{{ url_for('auth.reset_password') }}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Forgot password?</a>
+        <a href="{{ url_for('auth.signup') }}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Signup</a>
+        <a href="{{ url_for('auth.reset_password') }}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ms-4">Forgot password?</a>
     </form>
 {% endblock %}

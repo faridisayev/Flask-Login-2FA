@@ -5,4 +5,6 @@ export PYTHONDONTWRITEBYTECODE=abc
 export MAIL_USERNAME=faridisayev@outlook.com
 export MAIL_PASSWORD=gpaisjibqaaipqhd
 export SECRET_KEY=asd8a9d8213kkfad792937bacnad976b238
+export RECAPTCHA_SITE_KEY='6LfvPqomAAAAANcpnWn7OhCtUJJvo8KIa8yyBQUO'
+export RECAPTCHA_SECRET_KEY='6LfvPqomAAAAANszDvljzuIsjzNntTIwNC9aAk_n'
 flask run

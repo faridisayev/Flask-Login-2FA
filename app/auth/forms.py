@@ -9,7 +9,6 @@ class SignupForm(FlaskForm):
     email = EmailField(validators=[InputRequired(), Length(max=80)])
     password = PasswordField(validators=[InputRequired(), Regexp(re.compile(r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,80}$"))])
     confirm_password = PasswordField(validators=[InputRequired(), EqualTo('password')])
-    submit = SubmitField('Signup')
 
     def validate_username(self, username):
         existing_username = Account.query.filter_by(username = username.data).first()

@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, request, url_for, session
+from flask import render_template, flash, redirect, request, url_for, abort
 from app.auth import bp 
 from app.extensions import db, limiter, mail
 from app.models.account import Account
@@ -7,7 +7,7 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
-import os, pyotp, re
+import os, pyotp, re, requests
 
 serializer = URLSafeTimedSerializer(os.environ.get('SECRET_KEY'))
 
@@ -59,12 +59,17 @@ def second_factor_auth(token):
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
+        
+        verify_response = requests.post(url = f"https://www.google.com/recaptcha/api/siteverify?secret={os.environ.get('RECAPTCHA_SECRET_KEY')}&response={request.form['g-recaptcha-response']}").json()
+        if verify_response['success'] or verify_response['score'] < 0.5:
+            abort(401)
+
         db.session.add(Account(username = form.username.data, email = form.email.data, password = generate_password_hash(form.password.data)))
         db.session.commit()
         logout_user()
         flash('You have successfully signed up.', 'success')
         return redirect(url_for('auth.signup'))
-    return render_template('auth/signup.html', form = form)
+    return render_template('auth/signup.html', form = form, recaptcha_site_key = os.environ.get('RECAPTCHA_SITE_KEY'))
 
 @bp.route('/reset_password', methods = ['GET', 'POST'])
 @limiter.limit('10/minute')

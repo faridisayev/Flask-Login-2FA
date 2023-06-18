@@ -21,6 +21,14 @@ def create_app(create_config=Config):
 
     # error handlers
 
+    @app.errorhandler(401)
+    def Unauthorized(error):
+        return render_template('errors/401.html'), 401
+
+    @app.errorhandler(404)
+    def NotFound(error):
+        return render_template('errors/404.html'), 404
+
     @app.errorhandler(429)
     def TooManyRequests(error):
         return render_template('errors/429.html'), 429
@@ -28,10 +36,6 @@ def create_app(create_config=Config):
     @app.errorhandler(500)
     def InternalServerError(error):
         return render_template('errors/500.html'), 500
-    
-    @app.errorhandler(404)
-    def NotFound(error):
-        return render_template('errors/404.html'), 404
     
     @app.errorhandler(Exception)
     def Unknown(error):

@@ -1,10 +1,18 @@
 {% extends 'base.html' %}
 
-{% block link %}
+{% block head %}
+    <title>Two-Factor Authentication Setup</title>
     <link rel="stylesheet" href="{{ url_for('static', filename = 'auth/css/second_factor_auth.css')}}">
+    <style>
+        form {
+            max-width: 400px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
 {% endblock %}
-
-{% block title %}Two-Factor Authentication Setup{% endblock %}
 
 {% block body %}
     <form action="{{ url_for('main.setup_2fa')}}" method="post" class="text-center">
