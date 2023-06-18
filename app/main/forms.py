@@ -15,7 +15,3 @@ class UpdateAccountForm(FlaskForm):
     def validate_email(self, email):
         existing_email = Account.query.filter_by(email = email.data).first()
         if existing_email: raise ValidationError('An account with this email already exists.')
-
-class SetupTwoFactorAuthenticationForm(FlaskForm):
-    totp = IntegerField(validators=[InputRequired()])
-    submit = SubmitField('Enable 2FA')

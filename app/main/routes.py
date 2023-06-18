@@ -3,7 +3,8 @@ from app.main import bp
 from flask_login import login_required, logout_user, current_user, fresh_login_required
 from app.extensions import db
 from app.models.account import Account
-from app.main.forms import UpdateAccountForm, SetupTwoFactorAuthenticationForm
+from app.main.forms import UpdateAccountForm
+from app.auth.forms import TOTPLoginForm as SetupTwoFactorAuthenticationForm
 from urllib import parse
 import pyotp
 
@@ -58,7 +59,10 @@ def setup_2fa():
 
     if form.validate_on_submit():
 
-        if not pyotp.TOTP(current_user.secret_key).verify(form.totp.data):
+        digits = [str(form.totp_digit_1.data), str(form.totp_digit_2.data), str(form.totp_digit_3.data), str(form.totp_digit_4.data), str(form.totp_digit_5.data), str(form.totp_digit_6.data)]
+        totp = int(''.join(digits))
+
+        if not pyotp.TOTP(current_user.secret_key).verify(totp):
             flash('The code you provided is wrong. Please scan new qrcode and try again.', 'danger')
             return redirect(url_for('main.setup_2fa'))
         

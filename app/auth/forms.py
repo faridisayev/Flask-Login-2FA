@@ -39,5 +39,10 @@ class NewPasswordForm(FlaskForm):
     submit = SubmitField('Reset password')
 
 class TOTPLoginForm(FlaskForm):
-    totp = IntegerField(validators=[InputRequired()])
+    totp_digit_1 = IntegerField(validators = [InputRequired()])
+    totp_digit_2 = IntegerField(validators = [InputRequired()])
+    totp_digit_3 = IntegerField(validators = [InputRequired()])
+    totp_digit_4 = IntegerField(validators = [InputRequired()])
+    totp_digit_5 = IntegerField(validators = [InputRequired()])
+    totp_digit_6 = IntegerField(validators = [InputRequired()])
     submit = SubmitField('TOTP Login')

@@ -41,7 +41,9 @@ def second_factor_auth(token):
     form = TOTPLoginForm()
     if form.validate_on_submit():
         user = Account.query.filter_by(username = username).first()
-        if pyotp.totp.TOTP(user.secret_key).verify(form.totp.data):
+        digits = [str(form.totp_digit_1.data), str(form.totp_digit_2.data), str(form.totp_digit_3.data), str(form.totp_digit_4.data), str(form.totp_digit_5.data), str(form.totp_digit_6.data)]
+        totp = int(''.join(digits))
+        if pyotp.totp.TOTP(user.secret_key).verify(totp):
             login_user(user, remember = remember_me)
             return redirect(next or url_for('main.dashboard'))
         else:

@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block link %}
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'auth/css/second_factor_auth.css')}}">
+{% endblock %}
+
 {% block title %}F2A{% endblock %}
 
 {% block body %}
@@ -12,15 +16,16 @@
         {% endfor %}
         {{ form.csrf_token }}
         <div class="mb-3">
-            {{ form.totp(class = 'form-control', placeholder = '6 digit code') }}
-            {% if form.totp.errors %}
-                {% for error in form.totp.errors %}
-                    <div class="alert alert-danger mt-1">
-                        {{ error }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+            <div class="d-flex mb-3">
+                {{ form.totp_digit_1(type = 'tel', maxlength = '1', pattern = '[0-9]', class = 'form-control', autofocus = True) }}
+                {{ form.totp_digit_2(type = 'tel', maxlength = '1', pattern = '[0-9]', class = 'form-control') }}
+                {{ form.totp_digit_3(type = 'tel', maxlength = '1', pattern = '[0-9]', class = 'form-control') }}
+                {{ form.totp_digit_4(type = 'tel', maxlength = '1', pattern = '[0-9]', class = 'form-control') }}
+                {{ form.totp_digit_5(type = 'tel', maxlength = '1', pattern = '[0-9]', class = 'form-control') }}
+                {{ form.totp_digit_6(type = 'tel', maxlength = '1', pattern = '[0-9]', class = 'form-control') }}
+            </div>
         </div>
-        {{ form.submit(class = 'btn btn-primary') }}
+        {{ form.submit(class = 'btn btn-primary w- 100') }}
     </form>
+    <script src="{{ url_for('static', filename = 'auth/js/second_factor_auth.js')}}"></script>
 {% endblock %}
