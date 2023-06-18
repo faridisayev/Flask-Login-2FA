@@ -110,11 +110,16 @@ def new_password(token):
 
     form = NewPasswordForm()
     if form.validate_on_submit():
+
+        verify_response = requests.post(url = f"https://www.google.com/recaptcha/api/siteverify?secret={os.environ.get('RECAPTCHA_SECRET_KEY')}&response={request.form['g-recaptcha-response']}").json()
+        if not verify_response['success'] or verify_response['score'] < 0.5:
+            abort(401)
+
         user = Account.query.filter_by(email = email).first()
         user.password = generate_password_hash(form.new_password.data)
         db.session.add(user)
         db.session.commit()
         flash('Password has been successfully reset.', 'success')
-    return render_template('auth/new_password.html', form = form)
+    return render_template('auth/new_password.html', form = form, recaptcha_site_key = os.environ.get('RECAPTCHA_SITE_KEY'))
 
     
