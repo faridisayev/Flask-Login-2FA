@@ -86,11 +86,16 @@ def signup():
 def reset_password():
     form = ResetPasswordForm()
     if form.validate_on_submit():
+
+        verify_response = requests.post(url = f"https://www.google.com/recaptcha/api/siteverify?secret={os.environ.get('RECAPTCHA_SECRET_KEY')}&response={request.form['g-recaptcha-response']}").json()
+        if not verify_response['success'] or verify_response['score'] < 0.5:
+            abort(401)
+
         link = url_for('auth.new_password', token = serializer.dumps(form.email.data, salt = 'verify'), _external = True)
         mail.send(Message('Reset Password', sender = os.environ.get('MAIL_USERNAME'), recipients = [form.email.data], body = f'Click this link to reset your password: {link}'))
         flash(f'Verification link has been sent to {form.email.data}', 'success')
         return redirect(url_for('auth.reset_password'))
-    return render_template('auth/reset_password.html', form = form)
+    return render_template('auth/reset_password.html', form = form, recaptcha_site_key = os.environ.get('RECAPTCHA_SITE_KEY'))
 
 @bp.route('/new_password/<token>', methods = ['GET', 'POST'])
 @limiter.limit('10/minute')
