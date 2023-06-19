@@ -6,6 +6,7 @@ from app.models.account import Account
 from app.main.forms import UpdateAccountForm
 from app.auth.forms import TOTPLoginForm as SetupTwoFactorAuthenticationForm
 from urllib import parse
+from app.auth.recaptcha import verify_response
 import pyotp, requests, os
 
 @bp.route('/')
@@ -42,11 +43,7 @@ def delete_account(id):
 def update_account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
-
-        verify_response = requests.post(url = f"https://www.google.com/recaptcha/api/siteverify?secret={os.environ.get('RECAPTCHA_SECRET_KEY')}&response={request.form['g-recaptcha-response']}").json()
-        if not verify_response['success'] or verify_response['score'] < 0.5:
-            abort(401)
-
+        verify_response(request)
         if form.username.data: current_user.username = form.username.data
         if form.email.data: current_user.email = form.email.data
         db.session.commit()
@@ -63,11 +60,7 @@ def setup_2fa():
     form = SetupTwoFactorAuthenticationForm()
 
     if form.validate_on_submit():
-
-        verify_response = requests.post(url = f"https://www.google.com/recaptcha/api/siteverify?secret={os.environ.get('RECAPTCHA_SECRET_KEY')}&response={request.form['g-recaptcha-response']}").json()
-        if not verify_response['success'] or verify_response['score'] < 0.5:
-            abort(401)
-
+        verify_response(request)
         digits = [str(form.totp_digit_1.data), str(form.totp_digit_2.data), str(form.totp_digit_3.data), str(form.totp_digit_4.data), str(form.totp_digit_5.data), str(form.totp_digit_6.data)]
         totp = int(''.join(digits))
 
@@ -83,6 +76,7 @@ def setup_2fa():
     db.session.commit()
     uri = pyotp.totp.TOTP(current_user.secret_key).provisioning_uri(name = current_user.username, issuer_name = 'Flask App')
     qrcode_url = "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=" + parse.quote(uri, safe='')
+    flash('If you accidentally remove your account from Google Authenticator, you will not be able to retrieve your accoutnt.', 'info')
 
     return render_template('setup_2fa.html', form = form, qrcode_url = qrcode_url, recaptcha_site_key = os.environ.get('RECAPTCHA_SITE_KEY'))
 
