@@ -15,16 +15,4 @@ In addition, forms with 2FA have additional token that expires in 2 minutes (120
 # Setup
 In case you have downloaded the repo, create flask-run.sh to run the application smoothly.
 flask-run.sh should set up environmental variables which store sensitive data.
-
-Mine looks like this:
-
-export FLASK_APP=app
-export FLASK_ENV=development
-export FLASK_DEBUG=true
-export PYTHONDONTWRITEBYTECODE=abc
-export MAIL_USERNAME=MY_MAIL_USERNAME
-export MAIL_PASSWORD=MY_MAIL_PASSWORD
-export SECRET_KEY=MY_SECRET_KEY
-export RECAPTCHA_SITE_KEY=MY_RECAPTCHA_SITE_KEY
-export RECAPTCHA_SECRET_KEY=MY_RECAPTCHA_SECRET_KEY
-flask run
+You can find an example in the root directory.
