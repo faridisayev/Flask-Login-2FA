@@ -1,4 +1,4 @@
-# Complete-Flask-App-With-Blueprint
+# Flask-Login-2FA
 This is a simple Flask-Login application.
 It features 2 Factor Authentication with Google Authenticator, and also Mail verification for password reset. 
 
