@@ -76,6 +76,7 @@ def setup_2fa():
     db.session.commit()
     uri = pyotp.totp.TOTP(current_user.secret_key).provisioning_uri(name = current_user.username, issuer_name = 'Flask App')
     qrcode_url = "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=" + parse.quote(uri, safe='')
+    flash('If you accidentally remove your account from Google Authenticator, you will not be able to retrieve your accoutnt.', 'info')
 
     return render_template('setup_2fa.html', form = form, qrcode_url = qrcode_url, recaptcha_site_key = os.environ.get('RECAPTCHA_SITE_KEY'))
 
