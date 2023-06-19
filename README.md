@@ -11,3 +11,7 @@ Important to note, a user is unable to retrieve their account in case they delet
 
 I have also added recaptcha, rate limiting and CSRF tokens to my forms.
 In addition, forms with 2FA have additional token that expires in 2 minutes (120 seconds) and prompts user to log in again.
+
+*** Important ***
+
+Run `chmod +x ./flask-run.sh` to make flask-run.sh an executable on Linux machine.
