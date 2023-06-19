@@ -1,0 +1,10 @@
+Flask
+Flask-SQLAlchemy
+Flask-Limiter
+Flask-Login
+Flask-Mail
+Requests 
+PyOTP
+Flask-WTF
+Flask-Bcrypt
+ItsDangerous
