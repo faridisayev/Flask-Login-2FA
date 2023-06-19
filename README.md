@@ -4,7 +4,7 @@ It features 2 Factor Authentication with Google Authenticator, and also Mail ver
 
 There are 2 blueprints in Flask-Login.
 + **Auth Blueprint** handles _authentication_ process (everything up to the moment the user is logged in).
-+ **Main Blueprint** handles _main_ processes (changing username or email or setting up 2 factor authentication).
++ **Main Blueprint** handles _main_ process (changing username or email or setting up 2 factor authentication).
 
 Email and username of the user are unique and can be used while logging in to their account. 
 Important to note, a user is unable to retrieve their account in case they delete Google Authenticator or remove their account from Google Authenticator.
