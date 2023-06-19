@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, abort
+from flask import render_template, flash, redirect, url_for, request
 from app.main import bp 
 from flask_login import login_required, logout_user, current_user, fresh_login_required
 from app.extensions import db
@@ -7,7 +7,7 @@ from app.main.forms import UpdateAccountForm
 from app.auth.forms import TOTPLoginForm as SetupTwoFactorAuthenticationForm
 from urllib import parse
 from app.auth.recaptcha import verify_response
-import pyotp, requests, os
+import pyotp, os
 
 @bp.route('/')
 def home():
